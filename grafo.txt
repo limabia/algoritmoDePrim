@@ -1,0 +1,3 @@
+vertices arestas
+o1 d1 custo1
+o2 d2 custo2
