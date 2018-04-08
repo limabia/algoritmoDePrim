@@ -8,21 +8,22 @@
 typedef int bool;
 
 
-typedef struct adjacencia {
+typedef struct vizinho {
 	int vertice;
 	int peso;
-	struct adjacencia *prox;
-} ADJACENCIA;
+	struct vizinho *prox;
+} VIZINHO;
 
 typedef struct vertice {
-	ADJACENCIA *cabeca;
+	VIZINHO *vizinhos;
 } VERTICE;
 
 typedef struct grafo {
-	int vertices;
-	int arestas;
-	VERTICE *adj;
+	int nVertices;
+	int nArestas;
+	VERTICE *vertices;
 } GRAFO;
+
 
 /* le o arquivo de entrada e armazena os dados nas entruturas declaradas */
 void leEntrada() {
@@ -36,20 +37,22 @@ void leEntrada() {
 	} 
 	// criacao do grafo e atribuicao da quantidade de vertices e arestas
 	GRAFO* grafo = (GRAFO*)malloc(sizeof(grafo));
-	fscanf(entrada, "%d %d", &grafo->vertices, &grafo->arestas);
+	fscanf(entrada, "%d %d", &grafo->nVertices, &grafo->arestas);
 	// criacao dos vertices
-	grafo->adj = (VERTICE*)malloc((grafo->vertices) * sizeof(VERTICE));
+	grafo->vertices = (VERTICE*)malloc((grafo->nVertices) * sizeof(VERTICE));
 	
-	// varre linha a linha do arquivo e preenche o grafo, os vertices e as adjacencias 
+	// varre linha a linha do arquivo e preenche o grafo, os vertices e os vizinhos
 	int v1, v2;
 	double peso;
-	for(int i = 0; i < (grafo->vertices * 2); i++){
+	for(int i = 0; i < (grafo->nVertices * 2); i++){
 		fscanf(entrada, "%d %d %lf", &v1, &v2, &peso);
 		printf("%d %d %lf \n", v1, v2, peso );
-
-		grafo->adj->cabeca = NULL;
+		VIZINHO* vizinho = malloc(sizeof(VIZINHO));
+		vizinho->vertice = v2;
+		vizinho->peso = peso;
+		vizinho->prox = grafo->vertices[v1].vizinhos;
+		grafo->vertices[v1].vizinhos = vizinho;
 	}
-
 	fclose(entrada);
 }
 
