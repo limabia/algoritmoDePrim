@@ -104,7 +104,7 @@ void executaPrim(GRAFO *grafo) {
 		VIZINHO *vizinho = grafo->vertices[u].vizinhos;
 		while(vizinho != NULL) {
 			int w = vizinho->vertice;
-			if (custo[w] > vizinho->peso) {
+			if (conjuntoVerticesArvore[w] == 0 && custo[w] > vizinho->peso) {
 				custo[w] = vizinho->peso;
 				anterior[w] = u;
 			}
