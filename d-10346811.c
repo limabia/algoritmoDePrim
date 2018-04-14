@@ -27,9 +27,11 @@ typedef struct grafo {
 
 
 /* le o arquivo de entrada e armazena os dados nas entruturas declaradas */
-GRAFO* leEntrada() {
+GRAFO* leEntrada(char *nomeEntrada) {
+	printf("Arquivo de entrada: %s\n", nomeEntrada);
+
 	FILE *entrada;
-	entrada = fopen("grafo.txt", "r");
+	entrada = fopen(nomeEntrada, "r");
 	
 	// verifica se existe conteudo no arquivo
 	if (entrada == NULL){
@@ -68,11 +70,16 @@ GRAFO* leEntrada() {
 	return grafo;
 }
 
-void saida() {
+void saida(char *nomeSaida, double custoTotalArvore) {
+	printf("Arquivo de saida: %s\n", nomeSaida);
+	FILE *saida = fopen(nomeSaida, "w");
 
+	fprintf(saida, "%f", custoTotalArvore);
+	//  aresta da arvore
 }
 
-void executaPrim(GRAFO *grafo) {
+double executaPrim(GRAFO *grafo) {
+	double custoTotalArvore = 0.0;
 	bool conjuntoVerticesArvore[grafo->nVertices];
 	double custo[grafo->nVertices]; 
 	int anterior[grafo->nVertices];
@@ -82,21 +89,20 @@ void executaPrim(GRAFO *grafo) {
 		custo[i] = infinito;
 		anterior[i] = -1;
 	}
-
+	// menor custo, ponto de partida do algoritmo
 	custo[0] = 0;
 
 	while(1){
 		int u = -1;
 		double custoU = infinito;
-
 		for (int i=0; i < grafo->nVertices; i++) {
-			if (conjuntoVerticesArvore[i] == 0 && custo[i] < custoU) {
+			if (conjuntoVerticesArvore[i] == false && custo[i] < custoU) {
 				custoU = custo[i];
 				u = i;
 			}
 		}
-		conjuntoVerticesArvore[u] = 1;
-		printf("%d %lf\n", u, custoU);
+		conjuntoVerticesArvore[u] = true;
+		// printf("%d %lf\n", u, custoU);
 		if (u == -1)
 			// nao tem mais nenhum vertice que nao foi percorrido
 			break;
@@ -104,30 +110,37 @@ void executaPrim(GRAFO *grafo) {
 		VIZINHO *vizinho = grafo->vertices[u].vizinhos;
 		while(vizinho != NULL) {
 			int w = vizinho->vertice;
-			if (conjuntoVerticesArvore[w] == 0 && custo[w] > vizinho->peso) {
+			if (conjuntoVerticesArvore[w] == false && custo[w] > vizinho->peso) {
 				custo[w] = vizinho->peso;
 				anterior[w] = u;
 			}
 			vizinho = vizinho->prox;
 		}
 	}
-
 	for (int i=0; i < grafo->nVertices; i++) {
 		printf("%d %lf %d\n", i, custo[i], anterior[i]);
+		custoTotalArvore += custo[i];
 	}
+	printf("%f",custoTotalArvore);
 
+	return custoTotalArvore;
 }
 
-int main() {
-	GRAFO *grafo = leEntrada();
-	
-	if (grafo) {
-		executaPrim(grafo);
+int main(int argc, char **argv) {
+	if (argv[1]) {
+		GRAFO *grafo = leEntrada(argv[1]);
+		double custoTotalArvore = executaPrim(grafo);
+		
+		if(argv[2]){
+			saida(argv[2], custoTotalArvore);
+		}
+		else{
+			printf("Nome do arquivo de saida nao encontrado. \n");
+		}
 	}
 	else {
-		printf("Arquivo nao encontrado. \n");
+		printf("Arquivo de entrada nao encontrado. \n");
 	}
 	
 	return 0;
 } 
-
