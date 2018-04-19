@@ -64,50 +64,67 @@ GRAFO* leEntrada(char *nomeEntrada) {
 		grafo->vertices[v2].vizinhos = vizinho2;
 		
 	}
-	
 	fclose(entrada);
 
 	return grafo;
 }
 
-void saida(char *nomeSaida, double custoTotalArvore) {
+void saida(char *nomeSaida, double custo[], int anterior[], int n) {
 	printf("Arquivo de saida: %s\n", nomeSaida);
 	FILE *saida = fopen(nomeSaida, "w");
+	
+	// soma custo total da nova arvore de acordo com os custos obtidos 
+	double custoTotalArvore = 0.0;
+	for (int i=0; i < n; i++) {
+		custoTotalArvore += custo[i];
+	}
 
-	fprintf(saida, "%f", custoTotalArvore);
-	//  aresta da arvore
+	// adc ao arquivo o custo total da arvore geradora minima 
+	fprintf(saida, "%lf\n", custoTotalArvore);
+	
+	// adc as arestas da arvore ao arquivo, excluindo o anterior a raiz
+	for(int i = 1; i < n; i++) {
+		fprintf(saida, "%d %d %lf\n", anterior[i], i, custo[i]);
+	}
+
+	fclose(saida);
+
 }
 
-double executaPrim(GRAFO *grafo) {
-	double custoTotalArvore = 0.0;
+void executaPrim(GRAFO *grafo, double custo[], int anterior[]) {
 	bool conjuntoVerticesArvore[grafo->nVertices];
-	double custo[grafo->nVertices]; 
-	int anterior[grafo->nVertices];
 
+	// inicializa as variaveis
 	for (int i=0; i < grafo->nVertices; i++) {
 		conjuntoVerticesArvore[i] = false;
 		custo[i] = infinito;
 		anterior[i] = -1;
 	}
+
 	// menor custo, ponto de partida do algoritmo
 	custo[0] = 0;
 
+	// ja que a condicao de parada do while eh quando u == -1 
 	while(1){
 		int u = -1;
 		double custoU = infinito;
+		// encontra o vertice de menor custo entre os vertices que ainda nao estao na nova arvore
 		for (int i=0; i < grafo->nVertices; i++) {
 			if (conjuntoVerticesArvore[i] == false && custo[i] < custoU) {
 				custoU = custo[i];
 				u = i;
 			}
 		}
-		conjuntoVerticesArvore[u] = true;
-		// printf("%d %lf\n", u, custoU);
+		// nao tem mais nenhum vertice que nao foi percorrido
 		if (u == -1)
-			// nao tem mais nenhum vertice que nao foi percorrido
 			break;
 
+		// adiciona o vertice a arvore
+		conjuntoVerticesArvore[u] = true;
+		// pega a lista de vizinhos do vertice adicionado a nova arvore
 		VIZINHO *vizinho = grafo->vertices[u].vizinhos;
+		/* para cada vizinho dessa lista verifica se existe uma aresta de melhor custo para chegar nele
+		dado que ele ainda nao foi adicionado a nova arvore */ 
 		while(vizinho != NULL) {
 			int w = vizinho->vertice;
 			if (conjuntoVerticesArvore[w] == false && custo[w] > vizinho->peso) {
@@ -117,29 +134,23 @@ double executaPrim(GRAFO *grafo) {
 			vizinho = vizinho->prox;
 		}
 	}
-	for (int i=0; i < grafo->nVertices; i++) {
-		printf("%d %lf %d\n", i, custo[i], anterior[i]);
-		custoTotalArvore += custo[i];
-	}
-	printf("%f",custoTotalArvore);
-
-	return custoTotalArvore;
 }
 
 int main(int argc, char **argv) {
-	if (argv[1]) {
+	// se existe arquivo de entrada o le, executa o algoritmo de prim e imprime a saida
+	if (argc == 3) {
 		GRAFO *grafo = leEntrada(argv[1]);
-		double custoTotalArvore = executaPrim(grafo);
-		
-		if(argv[2]){
-			saida(argv[2], custoTotalArvore);
+		if (grafo != NULL) {	
+			double custo[grafo->nVertices]; 
+			int anterior[grafo->nVertices];
+			
+			executaPrim(grafo, custo, anterior);
+			saida(argv[2], custo, anterior, grafo->nVertices);
+		} else {
+			printf("Arquivo de entrada nao encontrado, tente novamente. \n");
 		}
-		else{
-			printf("Nome do arquivo de saida nao encontrado. \n");
-		}
-	}
-	else {
-		printf("Arquivo de entrada nao encontrado. \n");
+	} else {
+		printf("Numero de argumentos errado. \n");
 	}
 	
 	return 0;
