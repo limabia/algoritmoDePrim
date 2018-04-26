@@ -42,6 +42,9 @@ GRAFO* leEntrada(char *nomeEntrada) {
 	fscanf(entrada, "%d %d", &grafo->nVertices, &grafo->nArestas);
 	// criacao dos vertices
 	grafo->vertices = (VERTICE*)malloc((grafo->nVertices) * sizeof(VERTICE));
+	for(int i = 0; i < (grafo->nVertices); i++) {
+		grafo->vertices[i].vizinhos = NULL;
+	}
 	
 	// varre linha a linha do arquivo e preenche o grafo, os vertices e os vizinhos
 	int v1, v2;
@@ -80,11 +83,11 @@ void saida(char *nomeSaida, double custo[], int anterior[], int n) {
 	}
 
 	// adc ao arquivo o custo total da arvore geradora minima 
-	fprintf(saida, "%d\r\n", (int) custoTotalArvore);
+	fprintf(saida, "%d\n", (int) custoTotalArvore);
 	
 	// adc as arestas da arvore ao arquivo, excluindo o anterior a raiz
 	for(int i = 1; i < n; i++) {
-		fprintf(saida, "%d %d\r\n", anterior[i], i);
+		fprintf(saida, "%d %d\n", anterior[i], i);
 	}
 
 	fclose(saida);
