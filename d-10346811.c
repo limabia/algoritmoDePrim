@@ -80,11 +80,11 @@ void saida(char *nomeSaida, double custo[], int anterior[], int n) {
 	}
 
 	// adc ao arquivo o custo total da arvore geradora minima 
-	fprintf(saida, "%lf\n", custoTotalArvore);
+	fprintf(saida, "%d\r\n", (int) custoTotalArvore);
 	
 	// adc as arestas da arvore ao arquivo, excluindo o anterior a raiz
 	for(int i = 1; i < n; i++) {
-		fprintf(saida, "%d %d %lf\n", anterior[i], i, custo[i]);
+		fprintf(saida, "%d %d\r\n", anterior[i], i);
 	}
 
 	fclose(saida);
