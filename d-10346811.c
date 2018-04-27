@@ -139,6 +139,21 @@ void executaPrim(GRAFO *grafo, double custo[], int anterior[]) {
 	}
 }
 
+void liberaGrafo(GRAFO *grafo){
+	// libera as memorias alocadas para uso do grafo
+	for(int i= 0; i < grafo->nVertices; i++){
+		VIZINHO *viz = grafo->vertices[i].vizinhos;
+		VIZINHO *vizProx;
+		while(viz != NULL){
+			vizProx = viz->prox; 
+			free(viz);
+			viz = vizProx;
+		}
+	}
+	free(grafo->vertices);
+	free(grafo);
+}
+
 int main(int argc, char **argv) {
 	// se existe arquivo de entrada o le, executa o algoritmo de prim e imprime a saida
 	if (argc == 3) {
@@ -152,6 +167,7 @@ int main(int argc, char **argv) {
 		} else {
 			printf("Arquivo de entrada nao encontrado, tente novamente. \n");
 		}
+		liberaGrafo(grafo);
 	} else {
 		printf("Numero de argumentos errado. \n");
 	}
