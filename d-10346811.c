@@ -64,9 +64,9 @@ GRAFO* leEntrada(char *nomeEntrada) {
 		vizinho2->vertice = v1;
 		vizinho2->peso = peso;
 		vizinho2->prox = grafo->vertices[v2].vizinhos;
-		grafo->vertices[v2].vizinhos = vizinho2;
-		
+		grafo->vertices[v2].vizinhos = vizinho2;	
 	}
+	
 	fclose(entrada);
 
 	return grafo;
@@ -83,7 +83,7 @@ void saida(char *nomeSaida, double custo[], int anterior[], int n) {
 	}
 
 	// adc ao arquivo o custo total da arvore geradora minima 
-	fprintf(saida, "%d\n", (int) custoTotalArvore);
+	fprintf(saida, "%lf\n", custoTotalArvore);
 	
 	// adc as arestas da arvore ao arquivo, excluindo o anterior a raiz
 	for(int i = 1; i < n; i++) {
